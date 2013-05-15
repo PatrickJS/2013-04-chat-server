@@ -1,5 +1,7 @@
 /* Import node's http module: */
 var http = require("http");
+var url = require("url");
+var handler = require("./request-handler.js");
 
 /* This is the callback function that will be called each time a
  * client (i.e.. a web browser) makes a request to our server. */
@@ -61,7 +63,7 @@ var ip = "127.0.0.1";
 
 /* Use node's http module to create a server and start it listening on
  * the given port and IP. */
-var server = http.createServer(requestListener);
+var server = http.createServer(handler.handleRequest);
 console.log("Listening on http://" + ip + ":" + port);
 server.listen(port, ip);
 
