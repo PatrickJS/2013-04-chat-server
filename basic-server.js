@@ -3,52 +3,6 @@ var http = require("http");
 var url = require("url");
 var handler = require("./request-handler.js");
 
-/* This is the callback function that will be called each time a
- * client (i.e.. a web browser) makes a request to our server. */
-var requestListener = function (request, response) {
-
-  /* Request is an http.ServerRequest object containing various data
-   * about the client request - such as what URL the browser is
-   * requesting. */
-  console.log("Serving request type " + request.method + " for url " + request.url);
-
-  /* "Status code" and "headers" are HTTP concepts that you can
-   * research on the web as and when it becomes necessary. */
-  var statusCode = 200;
-
-  /* Without this line, this server wouldn't work.  See the note
-   * below about CORS. */
-  var headers = defaultCorsHeaders;
-
-  headers['Content-Type'] = "text/plain";
-
-  /* Response is an http.ServerRespone object containing methods for
-   * writing our response to the client. Documentation for both request
-   * and response can be found at
-   * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html*/
-  response.writeHead(statusCode, headers);
-  /* .writeHead() tells our server what HTTP status code to send back
-   * to the client, and what headers to include on the response. */
-
-  /* Make sure to always call response.end() - Node will not send
-   * anything back to the client until you do. The string you pass to
-   * response.end() will be the body of the response - i.e. what shows
-   * up in the browser.*/
-  response.end("Hello, World!");
-};
-
-/* These headers will allow Cross-Origin Resource Sharing.
- * This CRUCIAL code allows this server to talk to websites that
- * are on different domains. (Your chat client is running from a url
- * like file://your/chat/client/index.html, which is considered a
- * different domain.) */
-var defaultCorsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10 // Seconds.
-};
-
 /* Every server needs to listen on a port with a unique number. The
  * standard port for HTTP servers is port 80, but that port is
  * normally already claimed by another server and/or not accessible to
@@ -66,7 +20,6 @@ var ip = "127.0.0.1";
 var server = http.createServer(handler.handleRequest);
 console.log("Listening on http://" + ip + ":" + port);
 server.listen(port, ip);
-
 /* To start this server, run:
      node basic-server.js
  *  on the command line.

@@ -6,35 +6,62 @@ var url = require("url");
  * from this file and include it in basic-server.js. Check out the
  * node module documentation at http://nodejs.org/api/modules.html. */
 
-exports.handleRequest = function(request, response) {
-// do stuf to thre request
-//call sendResponse with data from handleRequest()
-  var statusCode = 200;
-  var defaultCorsHeaders = {
-    "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GETS, POST, PUT, DELETE, OPTIONS",
-    "access-control-allow-headers": "content-type, accept",
-    "access-control-max-age": 10 //seconds
-  };
-  var headers = defaultCorsHeaders;
-  headers['Content-type'] = 'text/plain';
-  var message;
-  switch(request.url) {
-    case '/':
-      message = 'root';
-      break;
-    case '/favicon.ico':
-      message = 'favicon';
-      break;
-    case '/1/classes/messages':
-      message = 'messages';
-      break;
-    case
-      console.log(request.url.query);
-      break;
+// var pathnameRouter = function(parseUrl){
+//   switch(parseUrl.pathname) {
+//     case '/':
+//       message = 'root';
+//       break;
+//     case '/favicon.ico':
+//       message = 'favicon';
+//       break;
+//     case '/1/classes/messages':
+//       (function(query){
+//         //do something with query
+//         //return sorted messages by time "-created at"
+//       }(parseUrl.query));
+//       break;
+//     default:
+//       console.log(parseUrl.pathname);
+//       // console.log(parseUrl.query);
+//       break;
+//   }
+// };
+
+var defaultCorsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GETS, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10 //seconds
+};
+
+var message = JSON.stringify({results:[{
+      'username': 'shawndrost',
+      'text': 'trololo',
+      'roomname': '4chan',
+      'hax': 'alert("hi")',
+      'createdAt': new Date()
+    }]});
+
+var httpMethodRouter = function(request, response){
+  if(request.method === 'GET'){
+    response.writeHead(200, defaultCorsHeaders);
+    response.end(message);
+    //deal with GET
+  } else if(request.method === 'POST'){
+    //deal with POST
+    response.writeHead(200, defaultCorsHeaders);
+    response.end('POST!');
+  } else if(request.method === 'OPTIONS'){
+    response.writeHead(200, defaultCorsHeaders);
+    response.end('OPTIONS!');
+  } else {
+    console.log('ERRRRORRRR i saw: ', request.method);
   }
+};
+
+
+exports.handleRequest = function(request, response) {
   console.log('Serving awesome requests types '+ request.method + ' for url ' + request.url);
 
-  response.writeHead(statusCode, headers);
-  response.end(message);
+  httpMethodRouter(request, response);
 };
