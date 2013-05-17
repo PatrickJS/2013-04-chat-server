@@ -10,14 +10,8 @@ function StubRequest(url, method, postdata) {
   var self = this;
   this.addListener = this.on = function(type, callback) {
     if (type == "data") {
-      // turn postdata (dictionary object) into raw postdata
-      // raw postdata looks like this:
-      // username=jono&message=do+my+bidding
-      var fields = [];
-      for (var key in self._postData) {
-        fields.push(key + "=" + self._postData[key].replace(" ", "+"));
-      }
-      callback(fields.join("&"));
+      // Turn post data into a JSON string
+      callback(JSON.stringify(self._postData));
     }
     if (type == "end") {
       callback();
@@ -52,7 +46,7 @@ describe("Node Server Request Listener Function", function() {
    handler.handleRequest(req, res);
 
    expect(res._responseCode).toEqual(200);
-   expect(res._data).toEqual("[]");
+   expect(res._data).toEqual('{"results":[]}');
    expect(res._ended).toEqual(true);
  });
 
@@ -65,8 +59,8 @@ describe("Node Server Request Listener Function", function() {
 
    handler.handleRequest(req, res);
 
-   expect(res._responseCode).toEqual(302);
-   expect(res._data).toEqual("\n");
+   expect(res._responseCode).toEqual(201);
+   // expect(res._data).toEqual("\n");
    expect(res._ended).toEqual(true);
 
    // Now if we request the log for that room,
@@ -79,9 +73,11 @@ describe("Node Server Request Listener Function", function() {
 
    expect(res._responseCode).toEqual(200);
    var messageLog = JSON.parse(res._data);
-   expect(messageLog.length).toEqual(1);
-   expect(messageLog[0].username).toEqual("Jono");
-   expect(messageLog[0].message).toEqual("Do my bidding!");
+
+
+   expect(messageLog.results.length).toEqual(1);
+   expect(messageLog.results[0].username).toEqual("Jono");
+   expect(messageLog.results[0].message).toEqual("Do my bidding!");
    expect(res._ended).toEqual(true);
  });
 
