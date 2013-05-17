@@ -22,7 +22,7 @@ exports.handleRequest = function(request, response) {
   var url_parts = url.parse(request.url, true);
   var pathNameArray = (url_parts.pathname).split('/');
   var returnCode = 404;
-  var body = '\n';
+  var body = '\n';  // explisit nothing
   var roomName = pathNameArray[pathNameArray.length-1];
   var query = url_parts.query;
 
@@ -36,8 +36,9 @@ exports.handleRequest = function(request, response) {
   } else if(request.method === 'POST'){
     returnCode = 302;
     var fullBody = '';
+    request.setEncoding('utf8');
     request.on('data', function(chunk) {
-      fullBody += chunk.toString(); 
+      fullBody += chunk;
     });
     request.on('end', function() {
       var data = fullBody;
@@ -50,6 +51,7 @@ exports.handleRequest = function(request, response) {
   }
 
   response.writeHead(returnCode, defaultCorsHeaders);
+  console.log(response);
   response.end(body);
 
 };
