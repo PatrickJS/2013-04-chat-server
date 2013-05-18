@@ -1,6 +1,6 @@
 var stream = require('stream');
 var url = require("url");
-
+var fs = require('fs');
 /* You should implement your request handler function in this file.
  * But you need to pass the function to http.createServer() in
  * basic-server.js.  So you must figure out how to export the function
@@ -28,10 +28,56 @@ exports.handleRequest = function(request, response) {
       returnCode = 404,
       body = 'hello worlds';
   //check if room exists
+  console.log(request.url);
   if (request.url === '/index.html' || request.url === '/') {
-    returnCode = 200;
+    fs.readFile('./app/index.html','utf8',function (err, data) {
+      // if (err) throw err;
+      returnCode = 200;
+      defaultCorsHeaders["Content-Type"] = "text/html";
+      response.writeHead(returnCode, defaultCorsHeaders);
+      // response.write(data);
+      response.end(data);
+      return;
+    });
+    return;
   }
-
+  else if (request.url === '/assets/img/binding_dark.png') {
+    returnCode = 404;
+    response.writeHead(returnCode, { "Content-Type" : "image/png" });
+    response.end();
+    // fs.createReadStream('./app/' + request.url).pipe(response);
+    return;
+  }
+  else if (request.url === '/assets/css/styles.css') {
+    fs.readFile('./app/' + request.url,'utf8',function (err, data) {
+      returnCode = 200;
+      defaultCorsHeaders["Content-Type"] = "text/css";
+      response.writeHead(returnCode, defaultCorsHeaders);
+      response.end(data);
+      return;
+    });
+    return;
+  }
+  else if (request.url === '/assets/js/setup.js') {
+    fs.readFile('./app/' + request.url,'utf8',function (err, data) {
+      returnCode = 200;
+      defaultCorsHeaders["Content-Type"] = "text/javascript";
+      response.writeHead(returnCode, defaultCorsHeaders);
+      response.end(data);
+      return;
+    });
+    return;
+  }
+  else if (request.url === '/assets/lib/jquery.js') {
+    fs.readFile('./app/' + request.url,'utf8',function (err, data) {
+      returnCode = 200;
+      defaultCorsHeaders["Content-Type"] = "text/javascript";
+      response.writeHead(returnCode, defaultCorsHeaders);
+      response.end(data);
+      return;
+    });
+    return;
+  }
   if (pathNameArray[1] === 'classes') {
     if(!storage[roomName]) {storage[roomName] = {results: []};}
     if(request.method === 'GET'){
@@ -44,17 +90,19 @@ exports.handleRequest = function(request, response) {
         fullBody += chunk;
       });
       request.on('end', function() {
-        var data = JSON.parse(fullBody);  
+        var data = JSON.parse(fullBody);
         storage[roomName].results.unshift(data);
       });
     } else if(request.method === 'OPTIONS'){
       returnCode = 200;
+      console.log('AAAHHHH REAL OPTIONS');
     } else {
       console.log('ERRRRORRRR i saw: ', request.method);
     }
+    response.writeHead(returnCode, defaultCorsHeaders);
+    response.end(body);
+    return;
   }
-
-  response.writeHead(returnCode, defaultCorsHeaders);
-  response.end(body);
-
+  console.log('should never get here');
+  response.end();
 };
